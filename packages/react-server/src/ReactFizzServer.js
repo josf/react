@@ -1442,23 +1442,8 @@ function replaySuspenseBoundary(
   const content: ReactNodeList = props.children;
   const fallback: ReactNodeList = props.fallback;
 
-  const fallbackAbortSet: Set<Task> = new Set();
-  let resumedBoundary: SuspenseBoundary;
-  if (canHavePreamble(task.formatContext)) {
-    resumedBoundary = createSuspenseBoundary(
-      request,
-      fallbackAbortSet,
-      createPreambleState(),
-      createPreambleState(),
-    );
-  } else {
-    resumedBoundary = createSuspenseBoundary(
-      request,
-      fallbackAbortSet,
-      null,
-      null,
-    );
-  }
+  const resumedBoundary = createResumedBoundary(request, task);
+
   resumedBoundary.parentFlushed = true;
   // We restore the same id of this boundary as was used during prerender.
   resumedBoundary.rootSegmentID = id;
@@ -1563,7 +1548,7 @@ function replaySuspenseBoundary(
     -1,
     parentBoundary,
     resumedBoundary.fallbackState,
-    fallbackAbortSet,
+    new Set(),
     fallbackKeyPath,
     task.formatContext,
     task.context,
@@ -1578,6 +1563,25 @@ function replaySuspenseBoundary(
   // TODO: This should be queued at a separate lower priority queue so that we only work
   // on preparing fallbacks if we don't have any more main content to task on.
   request.pingedTasks.push(suspendedFallbackTask);
+}
+
+function createResumedBoundary(request, task) {
+  const fallbackAbortSet: Set<Task> = new Set();
+  if (canHavePreamble(task.formatContext)) {
+    return createSuspenseBoundary(
+      request,
+      fallbackAbortSet,
+      createPreambleState(),
+      createPreambleState(),
+    );
+  } else {
+    return createSuspenseBoundary(
+      request,
+      fallbackAbortSet,
+      null,
+      null,
+    );
+  }
 }
 
 function renderPreamble(
