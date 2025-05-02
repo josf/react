@@ -1434,6 +1434,8 @@ function replaySuspenseBoundary(
   const prevKeyPath = task.keyPath;
   const previousReplaySet: ReplaySet = task.replay;
 
+  /* TODO: fix this when we get ACE working. */
+
   const parentBoundary = task.blockedBoundary;
   const parentHoistableState = task.hoistableState;
 
