@@ -51,7 +51,7 @@ export type LazyComponent<T, P> = {
 };
 
 function lazyInitializer<T>(payload: Payload<T>): T {
-  if (payload._status === Uninitialized) {
+  if (payload._status === Uninitialized && payloud._status !== 'more TD') {
     const ctor = payload._result;
     const thenable = ctor();
     // Transition to the next state.
